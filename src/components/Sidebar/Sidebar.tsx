@@ -22,17 +22,11 @@ import { useSelectUser } from "../../context/SelectedUser";
 import { socket } from "../../providers/Routes";
 import { getFontColor, getHoverColor } from "../Room/Room";
 
-// const pulseAnimation = keyframes`
-//   0% { transform: scale(1); }
-//   50% { transform: scale(1.05); }
-//   100% { transform: scale(1); }
-// `;
-
-// export const fadeIn = keyframes`
-//   0% { opacity: 0.5; }
-//   50% { opacity: 0.75; }
-//   100% { opacity: 1; }
-// `;
+const pulseAnimation = keyframes`
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+`;
 
 export const getuseId = () => {
   return localStorage.getItem("user_id") || "";
@@ -98,20 +92,18 @@ const ChatSidebar = () => {
         Users
       </Heading>
       <VStack spacing={4} align="stretch" overflow="auto">
-        <HStack alignItems="center" justifyContent="center">
+        <HStack alignItems="center" justifyContent="center" my={1}>
           <Button
-            // borderColor={color}
-            bgColor={color}
+            borderColor={color}
             _hover={{
               bgColor: getHoverColor(color),
               color: getFontColor(color),
             }}
             variant="outline"
             borderRadius={12}
-            color={getFontColor(color)}
             width={"95%"}
-            // height={"100%"}
-            // transition="all 0.2s"
+            animation={`${pulseAnimation} 1.25s ease-in-out infinite`}
+            transition="all 0.2s"
           >
             <Link to={"/users"}>+ New Chat</Link>
           </Button>
