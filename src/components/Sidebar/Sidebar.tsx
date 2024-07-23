@@ -21,6 +21,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelectUser } from "../../context/SelectedUser";
 import { socket } from "../../providers/Routes";
 import { getFontColor, getHoverColor } from "../Room/Room";
+import { useGetChannels } from "../../hooks/ChannelHook";
+import { PlusSquareIcon } from "@chakra-ui/icons";
+import { SmallAddIcon } from "@chakra-ui/icons";
 
 const pulseAnimation = keyframes`
   0% { transform: scale(1); }
@@ -48,8 +51,13 @@ const ChatSidebar = () => {
     queryKey: ["chatRooms", user_id],
   });
 
+  const { data: channelData } = useGetChannels({
+    id: user_id,
+    queryKey: ["channels", user_id],
+  });
+
   useEffect(() => {
-    const user: any = localStorage.getItem("selected-user");
+    const user: any = localStorage.getItem("selected-platform");
     if (user != null) {
       const data = JSON.parse(user);
       handleSelectUser(data);
@@ -88,77 +96,139 @@ const ChatSidebar = () => {
       minHeight={"calc(100vh - 64px)"}
       maxHeight={"calc(100vh - 64px)"}
     >
-      <Heading size="md" mb={4} color={color}>
-        Users
-      </Heading>
-      <VStack spacing={4} align="stretch" overflow="auto">
-        <HStack alignItems="center" justifyContent="center" my={1}>
-          <Button
-            borderColor={color}
-            _hover={{
-              bgColor: getHoverColor(color),
-              color: getFontColor(color),
-            }}
-            variant="outline"
-            borderRadius={12}
-            width={"95%"}
-            animation={`${pulseAnimation} 1.25s ease-in-out infinite`}
-            transition="all 0.2s"
-          >
-            <Link to={"/users"}>+ New Chat</Link>
-          </Button>
-        </HStack>
-        {usersData &&
-          usersData.chat_rooms.map((user: any, index: any) => {
-            const chatuser = user.participants.find((item: any) => {
-              return item._id != getuseId();
-            });
-            const { username, _id } = chatuser;
-            const { display_name, profile_picture } = chatuser?.userInfo ?? {};
-            return (
-              <Flex
-                key={index}
-                align="center"
-                p={2}
-                borderRadius="12"
-                cursor="pointer"
-                _hover={{
-                  bgColor: getHoverColor(color),
-                  color: getFontColor(color),
-                }}
-                transition="all 0.2s"
-                onClick={() => {
-                  handleSelectUser({
-                    room_id: user._id,
-                    chauser_id: chatuser._id,
-                    chatUsername: chatuser.userInfo
-                      ? chatuser.userInfo.display_name
-                      : chatuser.username,
-                    profile_picture: chatuser.userInfo
-                      ? chatuser.userInfo.profile_picture
-                      : "",
-                  });
-                }}
-              >
-                <Avatar
-                  src={
-                    chatuser?.userInfo && chatuser?.userInfo?.profile_picture
-                  }
-                  size="sm"
-                />
-                <Text ml={4} fontSize="medium" fontWeight={500}>
-                  {display_name || username}
+      <VStack spacing={2} align="stretch" overflow="auto">
+        <VStack align="stretch" overflow="auto">
+          <HStack alignItems="center" justifyContent="center">
+            <Text color={color} fontSize="large" fontWeight={500}>
+              Channels
+            </Text>
+            <SmallAddIcon w={6} h={6} color={color} />
+          </HStack>
+          {channelData &&
+            channelData.channels.length > 0 &&
+            channelData.channels.map((channel: any, index: any) => {
+              const { channel_name, _id } = channel;
+              return (
+                <Flex
+                  key={index}
+                  align="center"
+                  m={0}
+                  py={1}
+                  px={2}
+                  gap={0}
+                  borderRadius="12"
+                  cursor="pointer"
+                  _hover={{
+                    bgColor: getHoverColor(color),
+                    color: getFontColor(color),
+                  }}
+                  transition="all 0.2s"
+                  onClick={() => {
+                    handleSelectUser({
+                      id: channel._id,
+                      name: channel.channel_name,
+                      isLock: channel.is_private,
+                    });
+                  }}
+                >
+                  <Text ml={4} fontSize="inherit" fontWeight={500}>
+                    # &nbsp;{channel_name}
+                  </Text>
+                  <Text ml={4} color="green">
+                    {activeUsers.length > 0 && activeUsers.includes(_id) && (
+                      <Badge variant="solid" colorScheme="green">
+                        active
+                      </Badge>
+                    )}
+                  </Text>
+                </Flex>
+              );
+            })}
+          {channelData && channelData.channels.length == 0 && (
+            <Button
+              borderColor={color}
+              _hover={{
+                bgColor: getHoverColor(color),
+                color: getFontColor(color),
+              }}
+              variant="outline"
+              borderRadius={12}
+              width={"95%"}
+              ml={2}
+            >
+              <Link to={"/users"}>
+                <Text fontSize="small" fontWeight={500}>
+                  + New Channel{" "}
                 </Text>
-                <Text ml={4} color="green">
-                  {activeUsers.length > 0 && activeUsers.includes(_id) && (
-                    <Badge variant="solid" colorScheme="green">
-                      active
-                    </Badge>
-                  )}
-                </Text>
-              </Flex>
-            );
-          })}
+              </Link>
+            </Button>
+          )}
+        </VStack>
+        <VStack align="stretch" overflow="auto">
+          <HStack alignItems="center" justifyContent="center">
+            <Text color={color} fontSize="large" fontWeight={500}>
+              Users
+            </Text>
+            <Link to={"/users"}>
+              <SmallAddIcon w={6} h={6} color={color} />
+            </Link>
+          </HStack>
+          {usersData &&
+            usersData.chat_rooms.map((user: any, index: any) => {
+              const chatuser = user.participants.find((item: any) => {
+                return item._id != getuseId();
+              });
+              const { username, _id } = chatuser;
+              const { display_name, profile_picture } =
+                chatuser?.userInfo ?? {};
+              return (
+                <Flex
+                  key={index}
+                  align="center"
+                  m={0}
+                  py={1}
+                  px={2}
+                  gap={0}
+                  borderRadius="12"
+                  cursor="pointer"
+                  _hover={{
+                    bgColor: getHoverColor(color),
+                    color: getFontColor(color),
+                  }}
+                  transition="all 0.2s"
+                  onClick={() => {
+                    handleSelectUser({
+                      id: user._id,
+                      chatuser_id: chatuser._id,
+                      name: chatuser.userInfo
+                        ? chatuser.userInfo.display_name
+                        : chatuser.username,
+                      profile_picture: chatuser.userInfo
+                        ? chatuser.userInfo.profile_picture
+                        : "",
+                    });
+                  }}
+                >
+                  <Avatar
+                    src={
+                      chatuser?.userInfo && chatuser?.userInfo?.profile_picture
+                    }
+                    size="sm"
+                  />
+                  <Text ml={4} fontSize="inherit" fontWeight={400}>
+                    {display_name || username}
+                  </Text>
+                  <Text ml={4} color="green">
+                    {activeUsers.length > 0 && activeUsers.includes(_id) && (
+                      <Badge variant="solid" colorScheme="green">
+                        active
+                      </Badge>
+                    )}
+                  </Text>
+                </Flex>
+              );
+            })}
+        </VStack>
       </VStack>
     </Box>
   );

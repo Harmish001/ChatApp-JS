@@ -7,7 +7,7 @@ const SelectedUserProvider = ({ children }: any) => {
 
   const handleSelectUser = (user: any) => {
     setSelectedUser(user);
-    localStorage.setItem("selected-user", JSON.stringify(user))
+    localStorage.setItem("selected-platform", JSON.stringify(user));
   };
 
   return (

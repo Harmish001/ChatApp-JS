@@ -4,15 +4,12 @@ import {
   Box,
   Flex,
   Heading,
-  Stack,
   Text,
   VStack,
   Input,
   Button,
-  useColorModeValue,
   FormControl,
   HStack,
-  useToast,
 } from "@chakra-ui/react";
 import {
   useAddBackground,
@@ -65,8 +62,8 @@ export const ChatRoom = () => {
   const queryClient = useQueryClient();
 
   const { data: ChatData } = useGetChat({
-    id: selectedUser.room_id,
-    queryKey: ["user_chat", selectedUser.room_id],
+    id: selectedUser.id,
+    queryKey: ["user_chat", selectedUser.id],
   });
   const { mutate: AddBackground } = useAddBackground();
   // const { mutate: UpdateChat } = useUpdateChat();
@@ -83,7 +80,7 @@ export const ChatRoom = () => {
       message: newMessage,
       receiver: selectedUser.chauser_id,
       sender: getuseId(),
-      ...(messages.length > 0 && { room_id: selectedUser.room_id }),
+      ...(messages.length > 0 && { room_id: selectedUser.id }),
     };
     if (messages.length > 0) {
       socket.emit(`send-message`, payload);
@@ -127,12 +124,12 @@ export const ChatRoom = () => {
     setBackgroundImage(image);
     const payload = {
       bg_image: image,
-      room_id: selectedUser.room_id,
+      room_id: selectedUser.id,
     };
     AddBackground(payload, {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: ["user_chat", selectedUser.room_id],
+          queryKey: ["user_chat", selectedUser.id],
         });
       },
     });
@@ -142,12 +139,12 @@ export const ChatRoom = () => {
     setBackgroundImage(null);
     const payload = {
       bg_image: "none",
-      room_id: selectedUser.room_id,
+      room_id: selectedUser.id,
     };
     AddBackground(payload, {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: ["user_chat", selectedUser.room_id],
+          queryKey: ["user_chat", selectedUser.id],
         });
       },
     });
@@ -167,7 +164,7 @@ export const ChatRoom = () => {
 
   useEffect(() => {
     socket.on(`message`, (message) => {
-      if (selectedUser.room_id == message.room_id) {
+      if (selectedUser.id == message.room_id) {
         setMessages((prev: any) => [...prev, message]);
       }
     });
@@ -212,13 +209,13 @@ export const ChatRoom = () => {
               <Avatar size="md" src={selectedUser.profile_picture} />
               <VStack gap={0} align="start">
                 <Heading size="md" color={color}>
-                  {selectedUser.chatUsername}
+                  {selectedUser.name}
                 </Heading>
                 <HStack>
                   <Text color="gray">
                     {[...isActiveRoom].length > 0 &&
-                      isActiveRoom.has(selectedUser.room_id) &&
-                      isActiveRoom.get(selectedUser.room_id) != socket.id &&
+                      isActiveRoom.has(selectedUser.id) &&
+                      isActiveRoom.get(selectedUser.id) != socket.id &&
                       "typing..."}
                   </Text>
                 </HStack>
@@ -281,8 +278,8 @@ export const ChatRoom = () => {
                 color={"black"}
                 borderRadius="12"
                 mr={2}
-                onFocus={() => handleFocus(selectedUser.room_id)}
-                onBlur={() => handleBlur(selectedUser.room_id)}
+                onFocus={() => handleFocus(selectedUser.id)}
+                onBlur={() => handleBlur(selectedUser.id)}
               />
             </FormControl>
 

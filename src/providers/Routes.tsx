@@ -1,10 +1,16 @@
-import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Link,
+  Route,
+  Routes,
+  useNavigate,
+} from "react-router-dom";
 import { Suspense, lazy, useContext, useEffect, useState } from "react";
 import Navbar from "../components/Navbar/Navbar";
 import AuthContextProvider, { AuthContext } from "../context/AuthContext";
 import { SelectedUserProvider } from "../context/SelectedUser";
 import { io } from "socket.io-client";
-import { Button, useToast } from "@chakra-ui/react";
+import { Button, HStack, keyframes, Text, useToast } from "@chakra-ui/react";
 import { SketchPicker } from "react-color";
 import { MoonIcon } from "@chakra-ui/icons";
 import { useUpdateTheme } from "../hooks/AuthenticationHooks";
@@ -59,13 +65,18 @@ const Layout = ({ children }: any) => {
     mutate({ id: user.id, color: colorValue });
     setColor(colorValue);
   };
+  const pulseAnimation = keyframes`
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+`;
 
   return (
     <>
       {user && user.id && <Navbar />}
       {children}
       {user && user.id && (
-        <div style={{ position: "fixed", bottom: 35, left: 35 }}>
+        <div style={{ position: "fixed", bottom: 10, left: 15 }}>
           {open && (
             <div>
               <div
@@ -85,17 +96,59 @@ const Layout = ({ children }: any) => {
               />
             </div>
           )}
-          <Button
-            borderRadius={12}
-            bgColor={color}
-            _hover={{
-              bgColor: getHoverColor(color),
-              color: getFontColor(color),
-            }}
-            onClick={handleClick}
-          >
-            <MoonIcon style={{ color: getFontColor(color) }} />
-          </Button>
+          <HStack>
+            <Button
+              borderRadius={12}
+              gap={0}
+              px={1}
+              bgColor={color}
+              _hover={{
+                bgColor: getHoverColor(color),
+                color: getFontColor(color),
+              }}
+              onClick={handleClick}
+            >
+              <MoonIcon style={{ color: getFontColor(color) }} />
+            </Button>
+            {/* <Button
+              borderColor={color}
+              _hover={{
+                bgColor: getHoverColor(color),
+                color: getFontColor(color),
+              }}
+              mx={2}
+              variant="outline"
+              borderRadius={12}
+              width={"80%"}
+              animation={`${pulseAnimation} 1.25s ease-in-out infinite`}
+              transition="all 0.2s"
+            >
+              <Link to={"/users"}>
+                <Text fontSize="small" fontWeight={500}>
+                  + New Chat
+                </Text>
+              </Link>
+            </Button>
+            <Button
+              borderColor={color}
+              _hover={{
+                bgColor: getHoverColor(color),
+                color: getFontColor(color),
+              }}
+              variant="outline"
+              borderRadius={12}
+              width={"100%"}
+              ml={2}
+              animation={`${pulseAnimation} 1.25s ease-in-out infinite`}
+              transition="all 0.2s"
+            >
+              <Link to={"/users"}>
+                <Text fontSize="small" fontWeight={500}>
+                  + New Channel{" "}
+                </Text>
+              </Link>
+            </Button> */}
+          </HStack>
         </div>
       )}
     </>

@@ -6,10 +6,10 @@ import { ChatRoom } from "./components/Room/Room";
 import { useContext, useEffect, useState } from "react";
 import { useSelectUser } from "./context/SelectedUser";
 import { socket } from "./providers/Routes";
-
+import ChannelRoom from "./components/Room/ChannelRoom";
 
 function App() {
-  const { selectedUser } = useSelectUser();
+  const { selectedUser, selectedChannel } = useSelectUser();
 
   useEffect(() => {
     socket.connect();
@@ -25,9 +25,12 @@ function App() {
   return (
     <div className="App">
       <Box>
-        <HStack>
+        <HStack gap={0}>
           <ChatSidebar />
-          {selectedUser !== null && <ChatRoom />}
+          {selectedUser !== null && selectedUser?.chatuser_id && <ChatRoom />}
+          {selectedUser !== null && !selectedUser?.chatuser_id && (
+            <ChannelRoom />
+          )}
         </HStack>
       </Box>
     </div>

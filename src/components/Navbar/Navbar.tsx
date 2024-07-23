@@ -57,7 +57,7 @@ const Navbar = () => {
     queryClient.clear();
     localStorage.removeItem("user_id");
     localStorage.removeItem("username");
-    localStorage.removeItem("selected-user");
+    localStorage.removeItem("selected-platform");
     navigate("/login");
   };
 
@@ -74,7 +74,7 @@ const Navbar = () => {
         <HStack spacing={8} alignItems={"center"}>
           <Box>
             <Link to={"/"}>
-              <img src={logo} alt="Logo" height={60} width={60} />
+              <img src={logo} alt="Logo" height={50} width={50} />
             </Link>
           </Box>
           <HStack as={"nav"} spacing={4} display={{ base: "none", md: "flex" }}>

@@ -78,7 +78,7 @@ const UserModal = () => {
                         <Text
                           fontSize="large"
                           fontWeight={500}
-                          color={getFontColor(color)}
+                          _hover={{ color: getFontColor(color) }}
                         >
                           {user.userInfo
                             ? user.userInfo.display_name
