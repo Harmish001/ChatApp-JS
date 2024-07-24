@@ -199,6 +199,7 @@ export const ChatRoom = () => {
     <Box
       w="90%"
       minHeight="calc(100vh - 64px)"
+      maxHeight="calc(100vh - 64px)"
       p={4}
       // bg={useColorModeValue("gray.50", "gray.800")}
     >
@@ -206,7 +207,7 @@ export const ChatRoom = () => {
         <VStack spacing={4} align="stretch">
           <HStack justifyContent="space-between">
             <HStack>
-              <Avatar size="md" src={selectedUser.profile_picture} />
+              <Avatar size="sm" src={selectedUser.profile_picture} />
               <VStack gap={0} align="start">
                 <Heading size="md" color={color}>
                   {selectedUser.name}
@@ -229,7 +230,7 @@ export const ChatRoom = () => {
             </HStack>
           </HStack>
           <Box
-            h="76vh"
+            h="72vh"
             p={4}
             border="1px"
             borderColor={"gray.200"}

@@ -9,32 +9,34 @@ import { socket } from "./providers/Routes";
 import ChannelRoom from "./components/Room/ChannelRoom";
 
 function App() {
-  const { selectedUser, selectedChannel } = useSelectUser();
+	const { selectedUser, selectedChannel } = useSelectUser();
 
-  useEffect(() => {
-    socket.connect();
-    socket.on("connection", () => {
-      console.log("socket connected");
-    });
-    return () => {
-      socket.off("connection");
-      socket.disconnect();
-    };
-  }, []);
+	useEffect(() => {
+		socket.connect();
+		socket.on("connection", () => {
+			console.log("socket connected");
+		});
+		return () => {
+			socket.off("connection");
+			socket.disconnect();
+		};
+	}, []);
 
-  return (
-    <div className="App">
-      <Box>
-        <HStack gap={0}>
-          <ChatSidebar />
-          {selectedUser !== null && selectedUser?.chatuser_id && <ChatRoom />}
-          {selectedUser !== null && !selectedUser?.chatuser_id && (
-            <ChannelRoom />
-          )}
-        </HStack>
-      </Box>
-    </div>
-  );
+	return (
+		<div className="App">
+			<Box>
+				<HStack gap={0}>
+					<ChatSidebar />
+					{selectedUser !== null &&
+						selectedUser.id != null &&
+						selectedUser?.chatuser_id && <ChatRoom />}
+					{selectedUser !== null &&
+						selectedUser.id != null &&
+						!selectedUser?.chatuser_id && <ChannelRoom />}
+				</HStack>
+			</Box>
+		</div>
+	);
 }
 
 export default App;

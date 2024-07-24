@@ -91,7 +91,7 @@ const ChannelRoom = () => {
             </HStack> */}
           </HStack>
           <Box
-            h="76vh"
+            h="72vh"
             p={4}
             border="1px"
             borderColor={"gray.200"}

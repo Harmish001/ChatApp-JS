@@ -29,9 +29,9 @@ const UserModal = () => {
 
   const handleClick = (user: any) => {
     const payload = {
-      room_id: null,
-      chauser_id: user._id,
-      chatUsername: user.userInfo ? user.userInfo.display_name : user.username,
+      id: null,
+      chautser_id: user._id,
+      name: user.userInfo ? user.userInfo.display_name : user.username,
       profile_picture: user.userInfo ? user.userInfo.profile_picture : "",
     };
     handleSelectUser(payload);

@@ -68,6 +68,6 @@ export const useGetUsers = ({ id, queryKey }: any) => {
     queryFn: () => fetchUsers(id),
     staleTime: Infinity,
     gcTime: Infinity,
-    enabled: id && id.length > 0,
+    // enabled: id && id.length > 0,
   });
 };
