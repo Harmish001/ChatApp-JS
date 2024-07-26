@@ -21,6 +21,11 @@ const addBackground = async (body: any) => {
   return response.data;
 };
 
+const getChatRoomId = async (body:any) => {
+  const response = await axiosInstance.post(`/get/chat/room/id`, body);
+  return response.data;
+}
+
 export const useGetChat = ({ id, queryKey }: any) => {
   return useQuery({
     queryKey: queryKey,
@@ -46,5 +51,11 @@ export const useAddNewChat = () => {
 export const useAddBackground = () => {
   return useMutation({
     mutationFn: (payload: any) => addBackground(payload),
+  });
+};
+
+export const useGetChatRoomId = () => {
+  return useMutation({
+    mutationFn: (payload: any) => getChatRoomId(payload),
   });
 };

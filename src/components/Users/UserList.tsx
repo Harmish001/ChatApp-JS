@@ -16,26 +16,37 @@ import { EMPTY_AVATAR_IMAGE } from "../../Constants";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { getFontColor, getHoverColor } from "../Room/Room";
+import { useGetChatRoomId } from "../../hooks/ChatHook";
 
 const UserModal = () => {
-  const { handleSelectUser } = useSelectUser();
+  const { selectedUser, handleSelectUser } = useSelectUser();
   const {
     state: { user_id },
     activeUsers,
     color,
   } = useContext(AuthContext);
   const { data } = useGetAllUsers(user_id);
+  const { mutate } = useGetChatRoomId();
   const navigate = useNavigate();
-
-  const handleClick = (user: any) => {
-    const payload = {
-      id: null,
-      chautser_id: user._id,
-      name: user.userInfo ? user.userInfo.display_name : user.username,
-      profile_picture: user.userInfo ? user.userInfo.profile_picture : "",
-    };
-    handleSelectUser(payload);
-    navigate("/");
+  
+  const handleClick = (newUser: any) => {
+    console.log("newUser",newUser)
+    mutate(
+      { sender: user_id, receiver: newUser._id },
+      {
+        onSuccess: (res) => {
+          const payload = {
+            id: res.chatRoom._id,
+            chatuser_id: newUser._id,
+            name: newUser.userInfo ? newUser.userInfo.display_name : newUser.username,
+            profile_picture: newUser.userInfo ? newUser.userInfo.profile_picture : "",
+            type: "chatRoom"
+          };
+          handleSelectUser(payload);
+          navigate("/");
+        },
+      }
+    );
   };
 
   return (

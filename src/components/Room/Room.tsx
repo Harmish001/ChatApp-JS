@@ -65,6 +65,7 @@ export const ChatRoom = () => {
     id: selectedUser.id,
     queryKey: ["user_chat", selectedUser.id],
   });
+
   const { mutate: AddBackground } = useAddBackground();
   // const { mutate: UpdateChat } = useUpdateChat();
   // const { mutate: AddChat } = useAddNewChat();
@@ -78,23 +79,23 @@ export const ChatRoom = () => {
   const handleSendMessage = () => {
     const payload = {
       message: newMessage,
-      receiver: selectedUser.chauser_id,
+      receiver: selectedUser.chatuser_id,
       sender: getuseId(),
-      ...(messages.length > 0 && { room_id: selectedUser.id }),
+       room_id: selectedUser.id ,
     };
-    if (messages.length > 0) {
-      socket.emit(`send-message`, payload);
-      // UpdateChat(payload);
-    } else {
-      socket.emit("new-message", payload);
-      // AddChat(payload, {
-      //   onSuccess: () => {
-      //     setTimeout(() => {
-      //       queryClient.invalidateQueries({ queryKey: ["chatRooms"] });
-      //     }, 500);
-      //   },
-      // });
-    }
+    // if (messages.length > 0) {
+    socket.emit("new-message", payload);
+    // UpdateChat(payload);
+    // } else {
+    //   socket.emit("new-message", payload);
+    // AddChat(payload, {
+    //   onSuccess: () => {
+    //     setTimeout(() => {
+    //       queryClient.invalidateQueries({ queryKey: ["chatRooms"] });
+    //     }, 500);
+    //   },
+    // });
+    // }
     setNewMessage("");
   };
 
@@ -153,9 +154,9 @@ export const ChatRoom = () => {
 
   useEffect(() => {
     if (ChatData) {
-      setMessages(ChatData.chat.messages);
+      setMessages(ChatData.chat);
       if (ChatData.chat.bg_image) {
-        setBackgroundImage(ChatData.chat.bg_image);
+        // setBackgroundImage(ChatData.chat.bg_image);
       } else {
         setBackgroundImage(null);
       }
@@ -164,9 +165,9 @@ export const ChatRoom = () => {
 
   useEffect(() => {
     socket.on(`message`, (message) => {
-      if (selectedUser.id == message.room_id) {
+      // if (selectedUser.id == message.room_id) {
         setMessages((prev: any) => [...prev, message]);
-      }
+      // }
     });
     return () => {
       socket.off("message");
@@ -175,7 +176,7 @@ export const ChatRoom = () => {
 
   useEffect(() => {
     socket.on("new-chat", (message) => {
-      setMessages((prev: any) => [message]);
+      setMessages((prev: any) => [...prev, message]);
     });
 
     return () => {
@@ -193,6 +194,16 @@ export const ChatRoom = () => {
     return () => {
       socket.off("focusedRoom");
     };
+  }, []);
+
+  useEffect(() => {
+    // socket.on("joinRoom", (room) => {
+    //   console.log(room);
+    // });
+    socket.emit("roomId", selectedUser.id)
+    // return () => {
+    //   socket.off("joinRoom");
+    // };
   }, []);
 
   return (

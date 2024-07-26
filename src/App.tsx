@@ -28,8 +28,8 @@ function App() {
 				<HStack gap={0}>
 					<ChatSidebar />
 					{selectedUser !== null &&
-						selectedUser.id != null &&
-						selectedUser?.chatuser_id && <ChatRoom />}
+						// selectedUser.id != null &&
+						selectedUser?.type == "chatRoom" && <ChatRoom />}
 					{selectedUser !== null &&
 						selectedUser.id != null &&
 						!selectedUser?.chatuser_id && <ChannelRoom />}
