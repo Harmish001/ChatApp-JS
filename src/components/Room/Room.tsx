@@ -28,6 +28,8 @@ import { HamburgerIcon } from "@chakra-ui/icons";
 import { colord, extend } from "colord";
 import a11yPlugin from "colord/plugins/a11y";
 import mixPlugin from "colord/plugins/mix";
+import DateTag from "../CommonComponents/DateTag";
+import moment from "moment";
 
 extend([a11yPlugin]);
 extend([mixPlugin]);
@@ -81,7 +83,7 @@ export const ChatRoom = () => {
       message: newMessage,
       receiver: selectedUser.chatuser_id,
       sender: getuseId(),
-       room_id: selectedUser.id ,
+      room_id: selectedUser.id,
     };
     // if (messages.length > 0) {
     socket.emit("new-message", payload);
@@ -166,7 +168,7 @@ export const ChatRoom = () => {
   useEffect(() => {
     socket.on(`message`, (message) => {
       // if (selectedUser.id == message.room_id) {
-        setMessages((prev: any) => [...prev, message]);
+      setMessages((prev: any) => [...prev, message]);
       // }
     });
     return () => {
@@ -200,11 +202,12 @@ export const ChatRoom = () => {
     // socket.on("joinRoom", (room) => {
     //   console.log(room);
     // });
-    socket.emit("roomId", selectedUser.id)
+    socket.emit("roomId", selectedUser.id);
     // return () => {
     //   socket.off("joinRoom");
     // };
   }, []);
+  let lastDate: any = null;
 
   return (
     <Box
@@ -254,27 +257,38 @@ export const ChatRoom = () => {
             bgPosition="center center"
           >
             {messages.length > 0 ? (
-              messages.map((msg: any, index: any) => (
-                <Flex
-                  key={index}
-                  justify={
-                    msg.sender === getuseId() ? "flex-end" : "flex-start"
-                  }
-                >
-                  <Box
-                    bg={msg.sender === getuseId() ? color : "gray.300"}
-                    color={
-                      msg.sender === getuseId() ? getFontColor(color) : "black"
-                    }
-                    px={4}
-                    py={2}
-                    borderRadius="12px"
-                    mb={2}
-                  >
-                    {msg.message}
-                  </Box>
-                </Flex>
-              ))
+              messages.map((msg: any, index: any) => {
+                const messageDate = moment(msg.createdAt).startOf("day");
+                const showDateTag =
+                  !lastDate || !messageDate.isSame(lastDate, "day");
+                lastDate = messageDate;
+                return (
+                  <React.Fragment key={index}>
+                    {showDateTag && <DateTag date={msg.createdAt} />}
+                    <Flex
+                      key={index}
+                      justify={
+                        msg.sender === getuseId() ? "flex-end" : "flex-start"
+                      }
+                    >
+                      <Box
+                        bg={msg.sender === getuseId() ? color : "gray.300"}
+                        color={
+                          msg.sender === getuseId()
+                            ? getFontColor(color)
+                            : "black"
+                        }
+                        px={4}
+                        py={2}
+                        borderRadius="12px"
+                        mb={2}
+                      >
+                        {msg.message}
+                      </Box>
+                    </Flex>
+                  </React.Fragment>
+                );
+              })
             ) : (
               <Text>No messages yet.</Text>
             )}

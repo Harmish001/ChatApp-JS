@@ -20,6 +20,7 @@
     "axios": "^1.7.2",
     "colord": "^2.9.3",
     "framer-motion": "^11.2.10",
+    "moment": "^2.30.1",
     "react": "^18.3.1",
     "react-color": "^2.19.3",
     "react-dom": "^18.3.1",

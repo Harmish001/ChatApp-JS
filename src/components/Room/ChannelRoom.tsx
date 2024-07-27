@@ -23,6 +23,9 @@ import {
   usePostChannelMessage,
 } from "../../hooks/ChannelHook";
 import { getuseId } from "../Sidebar/Sidebar";
+import { socket } from "../../providers/Routes";
+import moment from "moment";
+import DateTag from "../CommonComponents/DateTag";
 
 const ChannelRoom = () => {
   const { selectedUser } = useSelectUser();
@@ -38,7 +41,7 @@ const ChannelRoom = () => {
 
   const [backgroundImage, setBackgroundImage] = useState(null);
   const [message, setMessages] = useState("");
-  const [channelMessges, setChannelMessages] = useState([]);
+  const [channelMessges, setChannelMessages] = useState<any>([]);
 
   const handleSendMessage = () => {
     const payload = {
@@ -46,7 +49,8 @@ const ChannelRoom = () => {
       sender: getuseId(),
       channel_id: selectedUser.id,
     };
-    mutate(payload);
+    socket.emit("sendChannelMessage", payload);
+    // mutate(payload);
     setMessages("");
   };
 
@@ -65,6 +69,17 @@ const ChannelRoom = () => {
       setChannelMessages(ChannelData.messages);
     }
   }, [ChannelData]);
+
+  useEffect(() => {
+    socket.emit("joinChannel", selectedUser.id);
+    socket.on("channelMessage", (newMessage) => {
+      setChannelMessages((prev: any) => [...prev, newMessage]);
+    });
+    return () => {
+      socket.off("channelMessage");
+    };
+  }, []);
+  let lastDate: any = null;
 
   return (
     <Box w="90%" minHeight="calc(100vh - 64px)" p={4}>
@@ -104,29 +119,46 @@ const ChannelRoom = () => {
             bgPosition="center center"
           >
             {channelMessges && channelMessges.length > 0 ? (
-              channelMessges.map((msg: any, index: any) => (
-                <Flex key={index} justify={"flex-start"} mb={3}>
-                  <Avatar size="md" src={msg.sender.userInfo.profile_picture} />
-                  <VStack gap={0} pl={2} alignItems="start">
-                    <Text
-                      fontSize="large"
-                      fontWeight={500}
-                      color={getuseId() == msg.sender._id && color}
-                    >
-                      {msg.sender.userInfo.display_name}
-                    </Text>
-                    <Box
-                      color={
-                        msg.sender === getuseId()
-                          ? getFontColor(color)
-                          : "black"
-                      }
-                    >
-                      {msg.message}
-                    </Box>
-                  </VStack>
-                </Flex>
-              ))
+              channelMessges.map((msg: any, index: any) => {
+                const messageDate = moment(msg.createdAt);
+                const showDateTag =
+                  !lastDate || !messageDate.isSame(lastDate, "day");
+                lastDate = messageDate;
+                return (
+                  <React.Fragment key={index}>
+                    {showDateTag && <DateTag date={messageDate} />}
+                    <Flex key={index} justify={"flex-start"} mb={3}>
+                      <Avatar
+                        size="md"
+                        src={msg.sender.userInfo.profile_picture}
+                      />
+                      <VStack gap={0} pl={2} alignItems="start">
+                        <HStack>
+                          <Text
+                            fontSize="large"
+                            fontWeight={500}
+                            color={getuseId() == msg.sender._id && color}
+                          >
+                            {msg.sender.userInfo.display_name}
+                          </Text>
+                          <Text fontSize="small" color="gray">
+                            {moment(msg.createdAt).format("LT")}
+                          </Text>
+                        </HStack>
+                        <Box
+                          color={
+                            msg.sender === getuseId()
+                              ? getFontColor(color)
+                              : "black"
+                          }
+                        >
+                          {msg.message}
+                        </Box>
+                      </VStack>
+                    </Flex>
+                  </React.Fragment>
+                );
+              })
             ) : (
               <Text>No messages yet.</Text>
             )}
@@ -153,7 +185,7 @@ const ChannelRoom = () => {
               width={100}
               bgColor={color}
               color={getFontColor(color)}
-              // onClick={handleSendMessage}
+              onClick={handleSendMessage}
               _hover={{
                 bgColor: getHoverColor(color),
                 color: getFontColor(color),
