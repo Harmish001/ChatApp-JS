@@ -1,10 +1,9 @@
 import React from "react";
-import { Box, Text } from "@chakra-ui/react";
+import { Badge, Box, Text } from "@chakra-ui/react";
 import moment from "moment";
 
 const DateTag = ({ date }: any) => {
   let dateLabel;
-  console.log("date",date)
 
   if (moment(date).isSame(moment(), "day")) {
     dateLabel = "Today";
@@ -16,9 +15,7 @@ const DateTag = ({ date }: any) => {
 
   return (
     <Box textAlign="center">
-      <Text fontSize="sm" color="gray.500">
-        {dateLabel}
-      </Text>
+      <Badge borderRadius={6} colorScheme='green' px={3} >{dateLabel}</Badge>
     </Box>
   );
 };

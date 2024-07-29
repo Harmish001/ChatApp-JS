@@ -42,6 +42,7 @@ const ChannelRoom = () => {
   const [backgroundImage, setBackgroundImage] = useState(null);
   const [message, setMessages] = useState("");
   const [channelMessges, setChannelMessages] = useState<any>([]);
+  const [filteredMsg, setFilterMsg] = useState([]);
 
   const handleSendMessage = () => {
     const payload = {
@@ -75,11 +76,25 @@ const ChannelRoom = () => {
     socket.on("channelMessage", (newMessage) => {
       setChannelMessages((prev: any) => [...prev, newMessage]);
     });
+    socket.on("filteredResult", (res) => {
+      setFilterMsg(res);
+      console.log("res", res);
+    });
     return () => {
       socket.off("channelMessage");
     };
   }, []);
+  useEffect(() => {
+    socket.emit("filter", { message: "hi", channel_id: selectedUser.id });
+  }, []);
   let lastDate: any = null;
+  const compareArrays = (array1: any, array2: any) => {
+    return array1
+      .filter((obj1: any) => array2.some((obj2: any) => obj1._id === obj2._id))
+      .map((obj: any) => obj._id); // Return an array of matching IDs
+  };
+
+  const matchingIds = compareArrays(channelMessges, filteredMsg);
 
   return (
     <Box w="90%" minHeight="calc(100vh - 64px)" p={4}>
@@ -124,6 +139,7 @@ const ChannelRoom = () => {
                 const showDateTag =
                   !lastDate || !messageDate.isSame(lastDate, "day");
                 lastDate = messageDate;
+                const isMatching = matchingIds.includes(msg._id);
                 return (
                   <React.Fragment key={index}>
                     {showDateTag && <DateTag date={messageDate} />}
@@ -151,6 +167,7 @@ const ChannelRoom = () => {
                               ? getFontColor(color)
                               : "black"
                           }
+                          bg={isMatching && "yellow.100"}
                         >
                           {msg.message}
                         </Box>
