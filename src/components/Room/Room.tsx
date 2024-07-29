@@ -10,6 +10,7 @@ import {
   Button,
   FormControl,
   HStack,
+  InputGroup,
 } from "@chakra-ui/react";
 import {
   useAddBackground,
@@ -30,6 +31,8 @@ import a11yPlugin from "colord/plugins/a11y";
 import mixPlugin from "colord/plugins/mix";
 import DateTag from "../CommonComponents/DateTag";
 import moment from "moment";
+import { SearchIcon } from "@chakra-ui/icons";
+import { SettingsIcon } from "@chakra-ui/icons";
 
 extend([a11yPlugin]);
 extend([mixPlugin]);
@@ -77,6 +80,8 @@ export const ChatRoom = () => {
   const [isActiveRoom, setIsActiveRoom] = useState<any>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [backgroundImage, setBackgroundImage] = useState(null);
+  const [filteredMsg, setFilterMsg] = useState<any>([]);
+  const [openSearchBar, setOpenSearchBar] = useState(false);
 
   const handleSendMessage = () => {
     const payload = {
@@ -154,6 +159,13 @@ export const ChatRoom = () => {
     setIsModalOpen(false);
   };
 
+  const handleSearchChange = (e: any) => {
+    socket.emit("filterChat", {
+      message: e.target.value,
+      room_id: selectedUser.id,
+    });
+  };
+
   useEffect(() => {
     if (ChatData) {
       setMessages(ChatData.chat);
@@ -167,9 +179,10 @@ export const ChatRoom = () => {
 
   useEffect(() => {
     socket.on(`message`, (message) => {
-      // if (selectedUser.id == message.room_id) {
       setMessages((prev: any) => [...prev, message]);
-      // }
+    });
+    socket.on("filteredChatResult", (res) => {
+      setFilterMsg(res);
     });
     return () => {
       socket.off("message");
@@ -199,14 +212,9 @@ export const ChatRoom = () => {
   }, []);
 
   useEffect(() => {
-    // socket.on("joinRoom", (room) => {
-    //   console.log(room);
-    // });
     socket.emit("roomId", selectedUser.id);
-    // return () => {
-    //   socket.off("joinRoom");
-    // };
   }, []);
+
   let lastDate: any = null;
 
   return (
@@ -237,10 +245,28 @@ export const ChatRoom = () => {
               </VStack>
             </HStack>
             <HStack>
-              <HamburgerIcon
+              <HStack>
+                {openSearchBar && (
+                  <InputGroup>
+                    <Input
+                      variant="flushed"
+                      autoFocus
+                      type="text"
+                      size="sm"
+                      onChange={handleSearchChange}
+                    />
+                  </InputGroup>
+                )}
+                <SearchIcon
+                  cursor="pointer"
+                  onClick={() => setOpenSearchBar(!openSearchBar)}
+                />
+              </HStack>
+              <SettingsIcon
                 cursor="pointer"
+                ml={2}
                 onClick={handleSettings}
-              ></HamburgerIcon>
+              ></SettingsIcon>
             </HStack>
           </HStack>
           <Box
@@ -272,7 +298,7 @@ export const ChatRoom = () => {
                       }
                     >
                       <Box
-                        bg={msg.sender === getuseId() ? color : "gray.300"}
+                        bg={msg.sender === getuseId() ? color : "gray.100"}
                         color={
                           msg.sender === getuseId()
                             ? getFontColor(color)
@@ -283,7 +309,16 @@ export const ChatRoom = () => {
                         borderRadius="12px"
                         mb={2}
                       >
-                        {msg.message}
+                        <Text
+                          bg={
+                            filteredMsg &&
+                            filteredMsg.includes(msg.message) &&
+                            "#fff9419c"
+                          }
+                          fontSize="medium"
+                        >
+                          {msg.message}
+                        </Text>
                       </Box>
                     </Flex>
                   </React.Fragment>

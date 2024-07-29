@@ -10,6 +10,8 @@ import {
   Button,
   FormControl,
   HStack,
+  InputGroup,
+  InputLeftElement,
 } from "@chakra-ui/react";
 import { useSelectUser } from "../../context/SelectedUser";
 import { HamburgerIcon } from "@chakra-ui/icons";
@@ -26,8 +28,12 @@ import { getuseId } from "../Sidebar/Sidebar";
 import { socket } from "../../providers/Routes";
 import moment from "moment";
 import DateTag from "../CommonComponents/DateTag";
+import { SearchIcon } from "@chakra-ui/icons";
+import { SettingsIcon } from "@chakra-ui/icons";
 
 const ChannelRoom = () => {
+  let lastDate: any = null;
+
   const { selectedUser } = useSelectUser();
   const {
     state: { user_id },
@@ -42,7 +48,8 @@ const ChannelRoom = () => {
   const [backgroundImage, setBackgroundImage] = useState(null);
   const [message, setMessages] = useState("");
   const [channelMessges, setChannelMessages] = useState<any>([]);
-  const [filteredMsg, setFilterMsg] = useState([]);
+  const [filteredMsg, setFilterMsg] = useState<any>([]);
+  const [openSearchBar, setOpenSearchBar] = useState(false);
 
   const handleSendMessage = () => {
     const payload = {
@@ -65,6 +72,17 @@ const ChannelRoom = () => {
     }
   };
 
+  const handleSearchChange = (e: any) => {
+    socket.emit("filter", {
+      message: e.target.value,
+      channel_id: selectedUser.id,
+    });
+  };
+
+  const handleOpenSearchBar = () => {
+    setOpenSearchBar(!openSearchBar);
+  };
+
   useEffect(() => {
     if (ChannelData) {
       setChannelMessages(ChannelData.messages);
@@ -78,23 +96,11 @@ const ChannelRoom = () => {
     });
     socket.on("filteredResult", (res) => {
       setFilterMsg(res);
-      console.log("res", res);
     });
     return () => {
       socket.off("channelMessage");
     };
   }, []);
-  useEffect(() => {
-    socket.emit("filter", { message: "hi", channel_id: selectedUser.id });
-  }, []);
-  let lastDate: any = null;
-  const compareArrays = (array1: any, array2: any) => {
-    return array1
-      .filter((obj1: any) => array2.some((obj2: any) => obj1._id === obj2._id))
-      .map((obj: any) => obj._id); // Return an array of matching IDs
-  };
-
-  const matchingIds = compareArrays(channelMessges, filteredMsg);
 
   return (
     <Box w="90%" minHeight="calc(100vh - 64px)" p={4}>
@@ -113,12 +119,23 @@ const ChannelRoom = () => {
                 </Heading>
               </VStack>
             </HStack>
-            {/* <HStack>
-              <HamburgerIcon
-                cursor="pointer"
-                // onClick={handleSettings}
-              ></HamburgerIcon>
-            </HStack> */}
+            <HStack>
+              <HStack>
+                {openSearchBar && (
+                  <InputGroup>
+                    <Input
+                      variant="flushed"
+                      autoFocus
+                      type="text"
+                      size="sm"
+                      onChange={handleSearchChange}
+                    />
+                  </InputGroup>
+                )}
+                <SearchIcon cursor="pointer" />
+              </HStack>
+              <SettingsIcon cursor="pointer" ml={2}></SettingsIcon>
+            </HStack>
           </HStack>
           <Box
             h="72vh"
@@ -139,7 +156,6 @@ const ChannelRoom = () => {
                 const showDateTag =
                   !lastDate || !messageDate.isSame(lastDate, "day");
                 lastDate = messageDate;
-                const isMatching = matchingIds.includes(msg._id);
                 return (
                   <React.Fragment key={index}>
                     {showDateTag && <DateTag date={messageDate} />}
@@ -167,7 +183,11 @@ const ChannelRoom = () => {
                               ? getFontColor(color)
                               : "black"
                           }
-                          bg={isMatching && "yellow.100"}
+                          bg={
+                            filteredMsg &&
+                            filteredMsg.includes(msg.message) &&
+                            "yellow.100"
+                          }
                         >
                           {msg.message}
                         </Box>

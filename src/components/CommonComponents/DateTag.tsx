@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Badge, Box, Text } from "@chakra-ui/react";
 import moment from "moment";
+import { AuthContext } from "../../context/AuthContext";
+import { getFontColor } from "../Room/Room";
 
 const DateTag = ({ date }: any) => {
   let dateLabel;
+  const { color } = useContext(AuthContext);
 
   if (moment(date).isSame(moment(), "day")) {
     dateLabel = "Today";
@@ -15,7 +18,9 @@ const DateTag = ({ date }: any) => {
 
   return (
     <Box textAlign="center">
-      <Badge borderRadius={6} colorScheme='green' px={3} >{dateLabel}</Badge>
+      <Badge borderRadius={10} fontWeight={500} bg={color} color={getFontColor(color)} px={3} py={1}>
+        {dateLabel}
+      </Badge>
     </Box>
   );
 };
