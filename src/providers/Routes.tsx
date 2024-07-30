@@ -115,25 +115,25 @@ const Layout = ({ children }: any) => {
 							<MoonIcon style={{ color: getFontColor(color) }} />
 						</Button>
 						{window.location.pathname == "/" && (
-							<Button
-								borderColor={color}
-								_hover={{
-									bgColor: getHoverColor(color),
-									color: getFontColor(color),
-								}}
-								mx={2}
-								variant="outline"
-								borderRadius={12}
-								width={"80%"}
-								animation={`${pulseAnimation} 1.25s ease-in-out infinite`}
-								transition="all 0.2s"
-							>
-								<Link to={"/channels"}>
+							<Link to={"/channels"}>
+								<Button
+									borderColor={color}
+									_hover={{
+										bgColor: getHoverColor(color),
+										color: getFontColor(color),
+									}}
+									mx={3}
+									variant="outline"
+									borderRadius={12}
+									width={"80%"}
+									animation={`${pulseAnimation} 1.25s ease-in-out infinite`}
+									transition="all 0.2s"
+								>
 									<Text fontSize="small" fontWeight={500}>
 										+ Browse Channels
 									</Text>
-								</Link>
-							</Button>
+								</Button>
+							</Link>
 						)}
 						{/* <Button
               borderColor={color}

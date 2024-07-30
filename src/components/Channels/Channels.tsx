@@ -20,6 +20,7 @@ import { useAddParticipant, useGetAllChannels } from "../../hooks/ChannelHook";
 import { UnlockIcon } from "@chakra-ui/icons";
 import { LockIcon } from "@chakra-ui/icons";
 import { useQueryClient } from "@tanstack/react-query";
+import ChannelCard from "./ChannelCard";
 
 const Channels = () => {
   const { handleSelectUser } = useSelectUser();
@@ -63,43 +64,44 @@ const Channels = () => {
           data.channels.map((channel: any, index: number) => {
             const { channel_name, _id } = channel;
             return (
-              <Card
-                key={index}
-                minWidth={300}
-                cursor="pointer"
-                onClick={() => handleClick(channel)}
-                borderRadius={12}
-                _hover={{
-                  bgColor: getHoverColor(color),
-                  color: getFontColor(color),
-                }}
-              >
-                <CardBody>
-                  <HStack justifyContent="start" alignItems="center">
-                    {!channel.is_private ? (
-                      <UnlockIcon w={6} h={6} />
-                    ) : (
-                      <LockIcon w={6} h={6} />
-                    )}
-                    <VStack gap={0} alignItems="start">
-                      <CardHeader pt={0} pb={1} pl={2}>
-                        <Text
-                          fontSize="large"
-                          fontWeight={500}
-                          _hover={{ color: getFontColor(color) }}
-                        >
-                          {channel_name}
-                        </Text>
-                      </CardHeader>
-                      {/* {activeUsers.length > 0 && activeUsers.includes(_id) && (
-                        <Badge variant="solid" colorScheme="green">
-                          active
-                        </Badge>
-                      )} */}
-                    </VStack>
-                  </HStack>
-                </CardBody>
-              </Card>
+              <ChannelCard data={channel} handleClick={handleClick}/>
+              // <Card
+              //   key={index}
+              //   minWidth={300}
+              //   cursor="pointer"
+              //   onClick={() => handleClick(channel)}
+              //   borderRadius={12}
+              //   _hover={{
+              //     bgColor: getHoverColor(color),
+              //     color: getFontColor(color),
+              //   }}
+              // >
+              //   <CardBody>
+              //     <HStack justifyContent="start" alignItems="center">
+              //       {!channel.is_private ? (
+              //         <UnlockIcon w={6} h={6} />
+              //       ) : (
+              //         <LockIcon w={6} h={6} />
+              //       )}
+              //       <VStack gap={0} alignItems="start">
+              //         <CardHeader pt={0} pb={1} pl={2}>
+              //           <Text
+              //             fontSize="large"
+              //             fontWeight={500}
+              //             _hover={{ color: getFontColor(color) }}
+              //           >
+              //             {channel_name}
+              //           </Text>
+              //         </CardHeader>
+              //         {/* {activeUsers.length > 0 && activeUsers.includes(_id) && (
+              //           <Badge variant="solid" colorScheme="green">
+              //             active
+              //           </Badge>
+              //         )} */}
+              //       </VStack>
+              //     </HStack>
+              //   </CardBody>
+              // </Card>
             );
           })}
       </HStack>

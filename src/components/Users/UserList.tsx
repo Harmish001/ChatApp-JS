@@ -17,6 +17,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { getFontColor, getHoverColor } from "../Room/Room";
 import { useGetChatRoomId } from "../../hooks/ChatHook";
+import SocialProfileWithImage from "../Card/Card";
 
 const UserModal = () => {
   const { selectedUser, handleSelectUser } = useSelectUser();
@@ -28,9 +29,9 @@ const UserModal = () => {
   const { data } = useGetAllUsers(user_id);
   const { mutate } = useGetChatRoomId();
   const navigate = useNavigate();
-  
+
   const handleClick = (newUser: any) => {
-    console.log("newUser",newUser)
+    console.log("newUser", newUser);
     mutate(
       { sender: user_id, receiver: newUser._id },
       {
@@ -38,9 +39,13 @@ const UserModal = () => {
           const payload = {
             id: res.chatRoom._id,
             chatuser_id: newUser._id,
-            name: newUser.userInfo ? newUser.userInfo.display_name : newUser.username,
-            profile_picture: newUser.userInfo ? newUser.userInfo.profile_picture : "",
-            type: "chatRoom"
+            name: newUser.userInfo
+              ? newUser.userInfo.display_name
+              : newUser.username,
+            profile_picture: newUser.userInfo
+              ? newUser.userInfo.profile_picture
+              : "",
+            type: "chatRoom",
           };
           handleSelectUser(payload);
           navigate("/");
@@ -60,51 +65,55 @@ const UserModal = () => {
           data.users.map((user: any, index: number) => {
             const { username, _id } = user;
             return (
-              <Card
-                key={index}
-                minWidth={300}
-                cursor="pointer"
+              <SocialProfileWithImage
+                data={user}
                 onClick={() => handleClick(user)}
-                borderRadius={12}
-                _hover={{
-                  bgColor: getHoverColor(color),
-                  color: getFontColor(color),
-                }}
-              >
-                <CardBody>
-                  <HStack justifyContent="start" alignItems="center">
-                    <Image
-                      src={
-                        user.userInfo
-                          ? user.userInfo.profile_picture
-                          : EMPTY_AVATAR_IMAGE
-                      }
-                      alt="image"
-                      height={55}
-                      width={55}
-                      borderRadius={"50%"}
-                    />
-                    <VStack gap={0} alignItems="start">
-                      <CardHeader pt={0} pb={1} pl={2}>
-                        <Text
-                          fontSize="large"
-                          fontWeight={500}
-                          _hover={{ color: getFontColor(color) }}
-                        >
-                          {user.userInfo
-                            ? user.userInfo.display_name
-                            : username}
-                        </Text>
-                      </CardHeader>
-                      {/* {activeUsers.length > 0 && activeUsers.includes(_id) && (
-                        <Badge variant="solid" colorScheme="green">
-                          active
-                        </Badge>
-                      )} */}
-                    </VStack>
-                  </HStack>
-                </CardBody>
-              </Card>
+              ></SocialProfileWithImage>
+              // <Card
+              //   key={index}
+              //   minWidth={300}
+              //   cursor="pointer"
+              //   onClick={() => handleClick(user)}
+              //   borderRadius={12}
+              //   _hover={{
+              //     bgColor: getHoverColor(color),
+              //     color: getFontColor(color),
+              //   }}
+              // >
+              //   <CardBody>
+              //     <HStack justifyContent="start" alignItems="center">
+              //       <Image
+              //         src={
+              //           user.userInfo
+              //             ? user.userInfo.profile_picture
+              //             : EMPTY_AVATAR_IMAGE
+              //         }
+              //         alt="image"
+              //         height={55}
+              //         width={55}
+              //         borderRadius={"50%"}
+              //       />
+              //       <VStack gap={0} alignItems="start">
+              //         <CardHeader pt={0} pb={1} pl={2}>
+              //           <Text
+              //             fontSize="large"
+              //             fontWeight={500}
+              //             _hover={{ color: getFontColor(color) }}
+              //           >
+              //             {user.userInfo
+              //               ? user.userInfo.display_name
+              //               : username}
+              //           </Text>
+              //         </CardHeader>
+              //         {/* {activeUsers.length > 0 && activeUsers.includes(_id) && (
+              //           <Badge variant="solid" colorScheme="green">
+              //             active
+              //           </Badge>
+              //         )} */}
+              //       </VStack>
+              //     </HStack>
+              //   </CardBody>
+              // </Card>
             );
           })}
       </HStack>
