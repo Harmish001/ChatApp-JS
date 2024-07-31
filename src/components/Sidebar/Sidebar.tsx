@@ -106,9 +106,14 @@ const ChatSidebar = () => {
     >
       <VStack spacing={2} align="stretch" overflow="auto">
         <VStack overflow="auto">
-          <HStack alignItems="center" justifyContent="center">
+          <HStack
+            alignItems="center"
+            justifyContent="center"
+            cursor="pointer"
+            onClick={onOpen}
+          >
             <Text color={color} fontSize="large" fontWeight={500}>
-              Channels
+              Add Channel
             </Text>
             <SmallAddIcon w={6} h={6} color={color} />
           </HStack>
@@ -122,7 +127,7 @@ const ChatSidebar = () => {
                   align="start"
                   justifyContent="start"
                   m={0}
-                  py={1}
+                  py={2}
                   px={2}
                   gap={0}
                   width="100%"
@@ -145,7 +150,6 @@ const ChatSidebar = () => {
                     <Text ml={2} mr={4} fontSize="inherit" fontWeight={500}>
                       # &nbsp;{channel_name}
                     </Text>
-                    <SettingsIcon />
                   </HStack>
                 </Flex>
               );
@@ -163,11 +167,9 @@ const ChatSidebar = () => {
               ml={2}
               onClick={onOpen}
             >
-              {/* <Link to={"/channels"}> */}
               <Text fontSize="small" fontWeight={500}>
                 + New Channel{" "}
               </Text>
-              {/* </Link> */}
             </Button>
           )}
         </VStack>
@@ -193,7 +195,7 @@ const ChatSidebar = () => {
                   key={index}
                   align="center"
                   m={0}
-                  py={1}
+                  py={2}
                   px={2}
                   gap={0}
                   borderRadius="12"
@@ -202,7 +204,7 @@ const ChatSidebar = () => {
                     bgColor: getHoverColor(color),
                     color: getFontColor(color),
                   }}
-                  transition="all 0.2s"
+                  transition="all 0.25s"
                   onClick={() => {
                     handleSelectUser({
                       id: user._id,

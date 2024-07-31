@@ -14,10 +14,12 @@ import {
   ModalOverlay,
   useDisclosure,
 } from "@chakra-ui/react";
-import React, { Ref } from "react";
+import React, { Ref, useContext } from "react";
 import { useCreateChannel } from "../../hooks/ChannelHook";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
+import { AuthContext } from "../../context/AuthContext";
+import { getFontColor, getHoverColor } from "../Room/Room";
 
 const CreateChannel = ({
   isOpen,
@@ -26,22 +28,32 @@ const CreateChannel = ({
   isOpen: boolean;
   onClose: () => void;
 }) => {
-  const navigate = useNavigate();
+  const {
+    color,
+    state: { user_id },
+  } = useContext(AuthContext);
   const queryClient = useQueryClient();
+
   const inputRef = React.useRef<HTMLInputElement>(null);
   const checkBoxRef = React.useRef<HTMLInputElement>(null);
 
-  const { mutate } = useCreateChannel();
+  const { mutate: CreateChannel } = useCreateChannel();
 
   const onSubmit = () => {
+    if (
+      inputRef.current &&
+      (inputRef.current?.value == null || inputRef.current?.value.length == 0)
+    )
+      return;
     const payload = {
       channel_name: inputRef.current?.value,
       is_private: !checkBoxRef.current?.checked,
+      userId: user_id,
     };
-    mutate(payload, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["allChannels"] });
-        navigate("/channels");
+    CreateChannel(payload, {
+      onSuccess: (res) => {
+        queryClient.invalidateQueries({ queryKey: ["channels", user_id] });
+        onClose();
       },
     });
   };
@@ -55,7 +67,7 @@ const CreateChannel = ({
         <ModalBody pb={6}>
           <FormControl>
             <FormLabel>Channel name</FormLabel>
-            <Input ref={inputRef} placeholder="Channel name" />
+            <Input ref={inputRef} required placeholder="Channel name" />
           </FormControl>
 
           <FormControl mt={4}>
@@ -67,10 +79,22 @@ const CreateChannel = ({
         </ModalBody>
 
         <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={onSubmit}>
+          <Button
+            borderRadius="12"
+            cursor="pointer"
+            _hover={{
+              bgColor: getHoverColor(color),
+              color: getFontColor(color),
+            }}
+            bg={color}
+            mr={3}
+            onClick={onSubmit}
+          >
             Save
           </Button>
-          <Button onClick={onClose}>Cancel</Button>
+          <Button borderRadius="12" onClick={onClose}>
+            Cancel
+          </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>

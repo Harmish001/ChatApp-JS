@@ -24,9 +24,13 @@ const ConfirmModal = ({
 }) => {
 	const { color } = useContext(AuthContext);
 	return (
-		<Modal isOpen={isOpen} onClose={onClose} isCentered>
+		<Modal
+			isOpen={isOpen}
+			onClose={onClose}
+			isCentered
+		>
 			<ModalOverlay />
-			<ModalContent>
+			<ModalContent borderRadius={12}>
 				<ModalHeader>Confirm</ModalHeader>
 				<ModalCloseButton />
 				<ModalBody pb={6}>
@@ -40,6 +44,7 @@ const ConfirmModal = ({
 						colorScheme="blue"
 						mx={2}
 						onClick={onSubmit}
+						borderRadius={12}
 						_hover={{
 							color: getFontColor(color),
 							bgColor: getHoverColor(color),
@@ -47,7 +52,10 @@ const ConfirmModal = ({
 					>
 						Yes
 					</Button>
-					<Button mx={2} onClick={onClose}>No</Button>
+
+					<Button borderRadius={12} mx={2} onClick={onClose}>
+						No
+					</Button>
 				</ModalFooter>
 			</ModalContent>
 		</Modal>

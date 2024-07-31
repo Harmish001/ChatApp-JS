@@ -18,6 +18,7 @@ import { AuthContext } from "../../context/AuthContext";
 import { getFontColor, getHoverColor } from "../Room/Room";
 import { useGetChatRoomId } from "../../hooks/ChatHook";
 import SocialProfileWithImage from "../Card/Card";
+import { useQueryClient } from "@tanstack/react-query";
 
 const UserModal = () => {
   const { selectedUser, handleSelectUser } = useSelectUser();
@@ -26,12 +27,13 @@ const UserModal = () => {
     activeUsers,
     color,
   } = useContext(AuthContext);
+
+  const queryClient = useQueryClient();
   const { data } = useGetAllUsers(user_id);
   const { mutate } = useGetChatRoomId();
   const navigate = useNavigate();
 
   const handleClick = (newUser: any) => {
-    console.log("newUser", newUser);
     mutate(
       { sender: user_id, receiver: newUser._id },
       {
@@ -47,6 +49,7 @@ const UserModal = () => {
               : "",
             type: "chatRoom",
           };
+            queryClient.invalidateQueries({ queryKey: ["chatRooms", user_id] });
           handleSelectUser(payload);
           navigate("/");
         },
@@ -59,7 +62,7 @@ const UserModal = () => {
       <HStack justifyContent="center" my={4}>
         <Heading color={color}>Users</Heading>
       </HStack>
-      <HStack gap={4}>
+      <HStack gap={4} wrap="wrap" justifyContent="center">
         {data &&
           data.users.length > 0 &&
           data.users.map((user: any, index: number) => {

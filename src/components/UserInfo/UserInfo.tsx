@@ -63,7 +63,6 @@ const UserInfoPage = () => {
 			try {
 				fileReader.onload = async (e: any) => {
 					const arrayBuffer = e.target.result;
-					console.log("arrayBuffer", arrayBuffer);
 					await axios
 						.post(
 							`${process.env.REACT_APP_URL}/uploadImage/${data.user.user_id}`,

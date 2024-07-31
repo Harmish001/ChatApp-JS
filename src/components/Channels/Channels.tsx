@@ -58,7 +58,7 @@ const Channels = () => {
       <HStack justifyContent="center" my={4}>
         <Heading color={color}>Channels</Heading>
       </HStack>
-      <HStack gap={4}>
+      <HStack gap={4} wrap="wrap">
         {data &&
           data.channels.length > 0 &&
           data.channels.map((channel: any, index: number) => {

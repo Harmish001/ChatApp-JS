@@ -12,12 +12,7 @@ import {
   HStack,
   InputGroup,
 } from "@chakra-ui/react";
-import {
-  useAddBackground,
-  useAddNewChat,
-  useGetChat,
-  useUpdateChat,
-} from "../../hooks/ChatHook";
+import { useAddBackground, useGetChat } from "../../hooks/ChatHook";
 import { getuseId } from "../Sidebar/Sidebar";
 import { useSelectUser } from "../../context/SelectedUser";
 import { useQueryClient } from "@tanstack/react-query";
@@ -25,7 +20,6 @@ import { AuthContext } from "../../context/AuthContext";
 import BackgroundImageModal from "./BackgroundImage";
 import { socket } from "../../providers/Routes";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
-import { HamburgerIcon } from "@chakra-ui/icons";
 import { colord, extend } from "colord";
 import a11yPlugin from "colord/plugins/a11y";
 import mixPlugin from "colord/plugins/mix";
@@ -65,6 +59,7 @@ export const ChatRoom = () => {
     color,
   } = useContext(AuthContext);
   const queryClient = useQueryClient();
+  const roomRef = useRef<HTMLDivElement>(null);
 
   const { data: ChatData } = useGetChat({
     id: selectedUser.id,
@@ -92,6 +87,7 @@ export const ChatRoom = () => {
     };
     // if (messages.length > 0) {
     socket.emit("new-message", payload);
+    
     // UpdateChat(payload);
     // } else {
     //   socket.emit("new-message", payload);
@@ -126,6 +122,10 @@ export const ChatRoom = () => {
 
   const handleSettings = () => {
     setIsModalOpen(true);
+  };
+
+  const handleSearchOpen = () => {
+    setOpenSearchBar(true);
   };
 
   const handleSelectBg = (image: any) => {
@@ -174,6 +174,14 @@ export const ChatRoom = () => {
       } else {
         setBackgroundImage(null);
       }
+      setTimeout(() => {
+        if (roomRef && roomRef.current) {
+          roomRef.current.scrollTo({
+            top: roomRef.current.scrollHeight,
+            behavior: "smooth",
+          });
+        }
+      }, 500);
     }
   }, [ChatData]);
 
@@ -189,16 +197,16 @@ export const ChatRoom = () => {
     };
   }, []);
 
-  useEffect(() => {
-    socket.on("new-chat", (message) => {
-      setMessages((prev: any) => [...prev, message]);
-    });
+//   useEffect(() => {
+//     socket.on("new-chat", (message) => {
+//       setMessages((prev: any) => [...prev, message]);
+//     });
 
-    return () => {
-      queryClient.invalidateQueries({ queryKey: ["chatRooms"] });
-      socket.off("new-chat");
-    };
-  }, []);
+//     return () => {
+//       queryClient.invalidateQueries({ queryKey: ["chatRooms"] });
+//       socket.off("new-chat");
+//     };
+//   }, []);
 
   useEffect(() => {
     socket.on("focusedRoom", (roomId: any) => {
@@ -281,6 +289,7 @@ export const ChatRoom = () => {
             bgSize="cover"
             bgRepeat="no-repeat"
             bgPosition="center center"
+            ref={roomRef}
           >
             {messages.length > 0 ? (
               messages.map((msg: any, index: any) => {
@@ -307,7 +316,7 @@ export const ChatRoom = () => {
                         px={4}
                         py={2}
                         borderRadius="12px"
-                        mb={2}
+                        my={1}
                       >
                         <Text
                           bg={

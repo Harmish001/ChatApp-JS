@@ -5,14 +5,16 @@ import React from "react";
 
 const UserProfile = ({ data }: { data: any }) => {
 	const { profile_picture, display_name, email, contact } = data;
+
 	return (
 		<Flex
 			bg="#edf3f8"
 			_dark={{
 				bg: "#3e3e3e",
 			}}
-			p={50}
+			p={4}
 			w="full"
+			h={"calc(100vh - 72px)"}
 			alignItems="center"
 			justifyContent="center"
 		>
