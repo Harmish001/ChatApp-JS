@@ -14,7 +14,10 @@ import {
   Input,
   Select,
   Stack,
+  Text,
+  Textarea,
   useColorModeValue,
+  useMediaQuery,
 } from "@chakra-ui/react";
 import React, { useContext } from "react";
 import { getFontColor, getHoverColor } from "../Room/Room";
@@ -22,15 +25,16 @@ import { AuthContext } from "../../context/AuthContext";
 import { useUpdateUserInfo } from "../../hooks/UserInfoHook";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useSelectUser } from "../../context/SelectedUser";
 
 const EditProfile = ({ data, setData, setIsEdit }: any) => {
   const { color } = useContext(AuthContext);
   const { user } = useContext(AuthContext);
   const { mutate: UpdateUserInfo } = useUpdateUserInfo();
-  const navigate = useNavigate();
 
-  const { contact, display_name, email, profile_picture, gender } = data;
+  const isMobile = useMediaQuery("(max-width: 1025px)")[0];
+
+  const { contact, display_name, email, profile_picture, gender, tag, bio } =
+    data;
 
   const handleProfilePicChange = async (
     e: React.ChangeEvent<HTMLInputElement>
@@ -72,6 +76,10 @@ const EditProfile = ({ data, setData, setIsEdit }: any) => {
     setData((prev: any) => ({ ...prev, profile_picture: "" }));
   };
 
+  const removeCoverPic = () => {
+    setData((prev: any) => ({ ...prev, cover_picture: "" }));
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setData({ ...data, [name]: value });
@@ -91,67 +99,92 @@ const EditProfile = ({ data, setData, setIsEdit }: any) => {
     setData((prev: any) => ({ ...prev, gender: e.target.value }));
   };
 
+  const handleBioChange = (e: any) => {
+    setData((prev: any) => ({ ...prev, bio: e.target.value }));
+  };
+
   const handleSkip = () => {
     setIsEdit(false);
   };
 
   return (
     <React.Fragment>
-      <Flex
-        align="center"
-        justify="center"
-        bg={useColorModeValue("gray.50", "gray.800")}
-        h={"calc(100vh - 72px)"}
-      >
+      <Flex align="center" justify="center" px={4} mt={!isMobile ? 8 : 2}>
         <Box
           rounded="lg"
           bg={useColorModeValue("white", "gray.700")}
           boxShadow="lg"
-          p={8}
+          p={!isMobile ? 8 : 5}
         >
+          <Stack justifyContent="center" alignItems="center">
+            <Text fontSize="x-large" fontWeight="700" color={color}>
+              Profile
+            </Text>
+          </Stack>
           <Stack spacing={4}>
-            <FormControl id="displayName">
-              <FormLabel>Display Name</FormLabel>
-              <Input
-                type="text"
-                name="display_name"
-                value={display_name}
-                onChange={handleChange}
-              />
-            </FormControl>
-            <FormControl id="email">
-              <FormLabel>Email</FormLabel>
-              <Input
-                type="email"
-                name="email"
-                value={email}
-                onChange={handleChange}
-              />
-            </FormControl>
-            <FormControl id="gender">
-              <FormLabel>Gender</FormLabel>
-              <Select
-                placeholder="Select Gender"
-                value={gender}
-                onChange={handleGenderChange}
-              >
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-              </Select>
-            </FormControl>
-            <FormControl id="contact">
-              <FormLabel>Phone no.</FormLabel>
-              <Input
-                type="tel"
-                value={contact}
-                name="contact"
-                onChange={handleChange}
-              />
-            </FormControl>
-            <FormControl id="profilePic">
-              <FormLabel>Profile Picture</FormLabel>
-              <Center>
-                <Avatar size="xl" src={profile_picture}>
+            <HStack wrap="wrap">
+              <FormControl id="displayName">
+                <FormLabel>Display Name</FormLabel>
+                <Input
+                  type="text"
+                  name="display_name"
+                  value={display_name}
+                  onChange={handleChange}
+                />
+              </FormControl>
+            </HStack>
+            <HStack>
+              <FormControl id="email">
+                <FormLabel>Email</FormLabel>
+                <Input
+                  type="email"
+                  name="email"
+                  value={email}
+                  onChange={handleChange}
+                />
+              </FormControl>
+              <FormControl id="contact">
+                <FormLabel>Phone no.</FormLabel>
+                <Input
+                  type="tel"
+                  value={contact}
+                  name="contact"
+                  onChange={handleChange}
+                />
+              </FormControl>
+            </HStack>
+            <HStack>
+              <FormControl id="gender">
+                <FormLabel>Gender</FormLabel>
+                <Select
+                  placeholder="Select Gender"
+                  value={gender}
+                  onChange={handleGenderChange}
+                >
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </Select>
+              </FormControl>
+              <FormControl id="tag">
+                <FormLabel>Tag</FormLabel>
+                <Input
+                  type="text"
+                  value={tag}
+                  name="tag"
+                  onChange={handleChange}
+                />
+              </FormControl>
+            </HStack>
+            <HStack>
+              <FormControl id="bio">
+                <FormLabel>Bio</FormLabel>
+                <Textarea value={bio} name="bio" onChange={handleBioChange} />
+              </FormControl>
+            </HStack>
+            <HStack justifyContent="right" alignItems="center">
+              <FormControl id="profilePic" >
+                <FormLabel>Profile Picture</FormLabel>
+                <Avatar ml={4} size="xl" src={profile_picture}>
                   <AvatarBadge
                     as={IconButton}
                     size="sm"
@@ -163,50 +196,50 @@ const EditProfile = ({ data, setData, setIsEdit }: any) => {
                     onClick={removeProfilePic}
                   />
                 </Avatar>
-              </Center>
-              <Center mt={4}>
-                <Button
-                  as="label"
-                  htmlFor="file-upload"
-                  cursor="pointer"
-                  bg={color}
-                  color={getFontColor(color)}
-                  _hover={{
-                    bg: getHoverColor(color),
-                    color: getFontColor(color),
-                  }}
-                >
-                  Upload Image
-                </Button>
-                <Input
-                  id="file-upload"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleProfilePicChange}
-                  hidden
-                />
-              </Center>
-            </FormControl>
-            <Stack spacing={10} pt={2}>
-              <HStack>
-                <Button
-                  loadingText="Submitting"
-                  size="lg"
-                  bg={color}
-                  color={getFontColor(color)}
-                  _hover={{
-                    bg: getHoverColor(color),
-                    color: getFontColor(color),
-                  }}
-                  onClick={handleSubmit}
-                >
-                  Update Profile
-                </Button>
-                <Button size="lg" onClick={handleSkip} mx={2}>
-                  Skip for now
-                </Button>
-              </HStack>
-            </Stack>
+                <HStack mt={2}>
+                  <Button
+                    as="label"
+                    htmlFor="file-upload"
+                    cursor="pointer"
+                    bg={color}
+                    color={getFontColor(color)}
+                    _hover={{
+                      bg: getHoverColor(color),
+                      color: getFontColor(color),
+                    }}
+                  >
+                    Upload Image
+                  </Button>
+                  <Input
+                    id="file-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleProfilePicChange}
+                    hidden
+                  />
+                </HStack>
+              </FormControl>
+            </HStack>
+              <Stack spacing={10} pt={2}>
+                <HStack justifyContent="center">
+                  <Button
+                    loadingText="Submitting"
+                    size="lg"
+                    bg={color}
+                    color={getFontColor(color)}
+                    _hover={{
+                      bg: getHoverColor(color),
+                      color: getFontColor(color),
+                    }}
+                    onClick={handleSubmit}
+                  >
+                    Update Profile
+                  </Button>
+                  <Button size="lg" onClick={handleSkip} mx={2}>
+                    Skip for now
+                  </Button>
+                </HStack>
+              </Stack>
           </Stack>
         </Box>
       </Flex>

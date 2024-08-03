@@ -22,9 +22,8 @@ export default function SocialProfileWithImage({
   data: any;
   onClick: any;
 }) {
-
   const { color } = useContext(AuthContext);
-  
+
   return (
     <Box
       maxW={270}
@@ -39,9 +38,10 @@ export default function SocialProfileWithImage({
       <Image
         h={"120px"}
         w={"full"}
-        src={
-          "https://images.unsplash.com/photo-1612865547334-09cb8cb455da?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
-        }
+        src={data.userInfo.profile_picture}
+        blur={1}
+        sx={{ filter: "blur(1px)" }}
+        opacity={0.7}
         objectFit="cover"
         alt="#"
       />

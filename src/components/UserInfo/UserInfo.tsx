@@ -1,33 +1,5 @@
-import React, { useContext, useEffect, useState } from "react";
-import {
-  Box,
-  Button,
-  Flex,
-  FormControl,
-  FormLabel,
-  Heading,
-  Input,
-  Stack,
-  useColorModeValue,
-  Avatar,
-  AvatarBadge,
-  IconButton,
-  Center,
-  HStack,
-  Text,
-  Image,
-} from "@chakra-ui/react";
-import { SmallCloseIcon } from "@chakra-ui/icons";
-import {
-  useFetchUserInfo,
-  usePostUserInfo,
-  useUpdateUserInfo,
-} from "../../hooks/UserInfoHook";
-import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../../context/AuthContext";
-import { getFontColor, getHoverColor } from "../Room/Room";
-import { axiosInstance } from "../../lib/Requests";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useFetchUserInfo } from "../../hooks/UserInfoHook";
 import UserProfile from "./UserProfile";
 
 type userInfoPorps = {
@@ -36,6 +8,8 @@ type userInfoPorps = {
   email: string;
   profile_picture: string;
   gender: string;
+  tag: string;
+  bio: string;
 };
 
 const initialState: userInfoPorps = {
@@ -44,6 +18,8 @@ const initialState: userInfoPorps = {
   email: "",
   profile_picture: "",
   gender: "",
+  tag: "",
+  bio: "",
 };
 
 const UserInfoPage = () => {
@@ -53,18 +29,33 @@ const UserInfoPage = () => {
 
   const { data } = useFetchUserInfo(name, ["userInfo"]);
 
-  const [isUpdateInfo, setIsUpdateInfo] = useState<boolean>(false);
-
   useEffect(() => {
     if (data) {
       if (Object.keys(data.user).length > 0) {
         const {
           user: {
-            userInfo: { contact, display_name, profile_picture, email, gender },
+            userInfo: {
+              contact,
+              display_name,
+              profile_picture,
+              email,
+              gender,
+              tag,
+              bio,
+              cover_picture,
+            },
           },
         } = data;
-        setState((prev) => ({ contact, display_name, profile_picture, email, gender }));
-        setIsUpdateInfo(true);
+        setState((prev) => ({
+          contact,
+          display_name,
+          profile_picture,
+          email,
+          gender,
+          tag,
+          bio,
+          cover_picture,
+        }));
       }
     }
   }, [data]);

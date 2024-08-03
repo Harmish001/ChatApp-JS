@@ -1,6 +1,16 @@
 import { EmailIcon } from "@chakra-ui/icons";
 import { PhoneIcon } from "@chakra-ui/icons";
-import { Box, Button, Flex, Icon, Image, Stack, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Icon,
+  Image,
+  Stack,
+  Tag,
+  TagLabel,
+  Text,
+} from "@chakra-ui/react";
 import React, { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { getFontColor, getHoverColor } from "../Room/Room";
@@ -11,22 +21,26 @@ const UserProfile = ({ data, setData }: { data: any; setData: any }) => {
   const { color } = useContext(AuthContext);
   const [isEdit, setIsEdit] = useState<boolean>(false);
 
-  const { profile_picture, display_name, email, contact } = data;
+  const { profile_picture, display_name, email, contact, bio, tag } = data;
 
   const hanldeEdit = () => {
     setIsEdit(true);
   };
 
+  const checkForInfo = (stateValue: string, stateName: string) => {
+    if (stateValue == null || stateValue.length == 0) {
+      return `Add your ${stateName}`;
+    } else {
+      return stateValue;
+    }
+  };
+
   return (
     <React.Fragment>
       {isEdit ? (
-        <EditProfile data={data} setData={setData} setIsEdit={setIsEdit}/>
+        <EditProfile data={data} setData={setData} setIsEdit={setIsEdit} />
       ) : (
         <Flex
-          bg="#edf3f8"
-          _dark={{
-            bg: "#3e3e3e",
-          }}
           direction="column"
           p={4}
           borderRadius={12}
@@ -60,27 +74,32 @@ const UserProfile = ({ data, setData }: { data: any; setData: any }) => {
                 borderRadius={"12px"}
                 bg={color}
                 p={2}
-				cursor="pointer"
+                cursor="pointer"
                 onClick={hanldeEdit}
+                color={getFontColor(color)}
+                _hover={{ bg: getHoverColor(color) }}
               />
             </Stack>
             <Image
               w="full"
               h={56}
-              fit="contain"
+              fit="cover"
               objectPosition="center"
               src={profile_picture}
               alt="avatar"
             />
-            <Flex alignItems="center" px={6} py={3} bg={color}>
-              <Text
-                mx={3}
-                color={getFontColor(color)}
-                fontWeight="bold"
-                fontSize="lg"
+            <Flex alignItems="center" px={6} py={2} bg={color}>
+              <Tag
+                size="md"
+                py={1}
+				pr={3}
+				pl={1}
+                bg={getFontColor(color)}
+                borderRadius="full"
               >
-                Focusing
-              </Text>
+                <Tag borderRadius={"50%"} mr={2} size="sm" bg={color} />
+                <TagLabel color={color}>{checkForInfo(tag, "Tag")}</TagLabel>
+              </Tag>
             </Flex>
             <Box py={4} px={6}>
               <Text
@@ -101,8 +120,7 @@ const UserProfile = ({ data, setData }: { data: any; setData: any }) => {
                   color: "gray.400",
                 }}
               >
-                Full Stack maker & UI / UX Designer , love hip hop music Author
-                of Building UI.
+                {checkForInfo(bio,"Bio")}
               </Text>
 
               <Flex
@@ -115,7 +133,7 @@ const UserProfile = ({ data, setData }: { data: any; setData: any }) => {
               >
                 <PhoneIcon h={6} w={6} mr={2} />
                 <Text px={2} fontSize="sm">
-                  {contact}
+                  {checkForInfo(contact,"Contact")}
                 </Text>
               </Flex>
               <Flex
@@ -128,7 +146,7 @@ const UserProfile = ({ data, setData }: { data: any; setData: any }) => {
               >
                 <EmailIcon h={6} w={6} mr={2} />
                 <Text px={2} fontSize="sm">
-                  {email}
+                  {checkForInfo(email,"Email")}
                 </Text>
               </Flex>
             </Box>
