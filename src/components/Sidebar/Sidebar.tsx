@@ -174,12 +174,14 @@ const ChatSidebar = () => {
           )}
         </VStack>
         <VStack align="stretch" overflow="auto">
-          <HStack alignItems="center" justifyContent="center">
-            <Text color={color} fontSize="large" fontWeight={500}>
-              Users
-            </Text>
-            <Link to={"/users"}>
-              <SmallAddIcon w={6} h={6} color={color} />
+          <HStack alignItems="center" cursor="pointer" justifyContent="center" >
+            <Link to={"/users"} >
+              <HStack>
+                <Text color={color} fontSize="large" fontWeight={500}>
+                  Users
+                </Text>
+                <SmallAddIcon w={6} h={6} color={color} />
+              </HStack>
             </Link>
           </HStack>
           {usersData &&
