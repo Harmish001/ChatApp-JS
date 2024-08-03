@@ -11,6 +11,7 @@ import {
   useToast,
   keyframes,
   HStack,
+  useMediaQuery,
 } from "@chakra-ui/react";
 import { useGetUsers } from "../../hooks/UserInfoHook";
 import { AuthContext } from "../../context/AuthContext";
@@ -41,8 +42,7 @@ const ChatSidebar = () => {
   } = useContext(AuthContext);
   const { state, setActiveUsers } = useContext(AuthContext);
   const { handleSelectUser } = useSelectUser();
-  const toast = useToast();
-  const navigate = useNavigate();
+  const isTablet = useMediaQuery("(min-width: 800px)")[0];
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -96,13 +96,12 @@ const ChatSidebar = () => {
 
   return (
     <Box
-      w="20%"
+      w={!isTablet ? "100%" : "20%"}
       p={4}
-      bg={useColorModeValue("gray.100", "gray.900")}
       borderRight="12"
       borderColor={useColorModeValue("gray.200", "gray.700")}
-      minHeight={"calc(100vh - 64px)"}
-      maxHeight={"calc(100vh - 64px)"}
+      minHeight={"calc(100vh - 72px)"}
+      maxHeight={"calc(100vh - 72px)"}
     >
       <VStack spacing={2} align="stretch" overflow="auto">
         <VStack overflow="auto">
@@ -174,8 +173,8 @@ const ChatSidebar = () => {
           )}
         </VStack>
         <VStack align="stretch" overflow="auto">
-          <HStack alignItems="center" cursor="pointer" justifyContent="center" >
-            <Link to={"/users"} >
+          <HStack alignItems="center" cursor="pointer" justifyContent="center">
+            <Link to={"/users"}>
               <HStack>
                 <Text color={color} fontSize="large" fontWeight={500}>
                   Users

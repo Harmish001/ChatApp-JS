@@ -52,7 +52,7 @@ const CreateChannel = ({
     };
     CreateChannel(payload, {
       onSuccess: (res) => {
-        queryClient.invalidateQueries({ queryKey: ["channels", user_id] });
+        queryClient.invalidateQueries({ queryKey: ["channels"] });
         onClose();
       },
     });
@@ -87,6 +87,7 @@ const CreateChannel = ({
               color: getFontColor(color),
             }}
             bg={color}
+            color={getFontColor(color)}
             mr={3}
             onClick={onSubmit}
           >

@@ -140,25 +140,6 @@ const Layout = ({ children }: any) => {
                 </Button>
               </Link>
             )}
-            {/* <Button
-              borderColor={color}
-              _hover={{
-                bgColor: getHoverColor(color),
-                color: getFontColor(color),
-              }}
-              variant="outline"
-              borderRadius={12}
-              width={"100%"}
-              ml={2}
-              animation={`${pulseAnimation} 1.25s ease-in-out infinite`}
-              transition="all 0.2s"
-            >
-              <Link to={"/users"}>
-                <Text fontSize="small" fontWeight={500}>
-                  + New Channel{" "}
-                </Text>
-              </Link>
-            </Button> */}
           </HStack>
         </div>
       )}

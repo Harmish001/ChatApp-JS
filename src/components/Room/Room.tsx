@@ -11,6 +11,7 @@ import {
   FormControl,
   HStack,
   InputGroup,
+  useMediaQuery,
 } from "@chakra-ui/react";
 import { useAddBackground, useGetChat } from "../../hooks/ChatHook";
 import { getuseId } from "../Sidebar/Sidebar";
@@ -27,6 +28,7 @@ import DateTag from "../CommonComponents/DateTag";
 import moment from "moment";
 import { SearchIcon } from "@chakra-ui/icons";
 import { SettingsIcon } from "@chakra-ui/icons";
+import { CloseIcon } from "@chakra-ui/icons";
 
 extend([a11yPlugin]);
 extend([mixPlugin]);
@@ -58,8 +60,11 @@ export const ChatRoom = () => {
     state: { user_id },
     color,
   } = useContext(AuthContext);
+  let lastDate: any = null;
+  const isTablet = useMediaQuery("(min-width: 800px)")[0];
   const queryClient = useQueryClient();
   const roomRef = useRef<HTMLDivElement>(null);
+  const boxRef = useRef<HTMLDivElement>(null);
 
   const { data: ChatData } = useGetChat({
     id: selectedUser.id,
@@ -67,8 +72,6 @@ export const ChatRoom = () => {
   });
 
   const { mutate: AddBackground } = useAddBackground();
-  // const { mutate: UpdateChat } = useUpdateChat();
-  // const { mutate: AddChat } = useAddNewChat();
 
   const [messages, setMessages] = useState<any>([]);
   const [newMessage, setNewMessage] = useState<any>("");
@@ -87,7 +90,7 @@ export const ChatRoom = () => {
     };
     // if (messages.length > 0) {
     socket.emit("new-message", payload);
-    
+
     // UpdateChat(payload);
     // } else {
     //   socket.emit("new-message", payload);
@@ -197,16 +200,16 @@ export const ChatRoom = () => {
     };
   }, []);
 
-//   useEffect(() => {
-//     socket.on("new-chat", (message) => {
-//       setMessages((prev: any) => [...prev, message]);
-//     });
+  //   useEffect(() => {
+  //     socket.on("new-chat", (message) => {
+  //       setMessages((prev: any) => [...prev, message]);
+  //     });
 
-//     return () => {
-//       queryClient.invalidateQueries({ queryKey: ["chatRooms"] });
-//       socket.off("new-chat");
-//     };
-//   }, []);
+  //     return () => {
+  //       queryClient.invalidateQueries({ queryKey: ["chatRooms"] });
+  //       socket.off("new-chat");
+  //     };
+  //   }, []);
 
   useEffect(() => {
     socket.on("focusedRoom", (roomId: any) => {
@@ -223,15 +226,21 @@ export const ChatRoom = () => {
     socket.emit("roomId", selectedUser.id);
   }, []);
 
-  let lastDate: any = null;
+  useEffect(() => {
+    if (boxRef && boxRef.current) {
+      boxRef.current.scrollIntoView({
+        behavior: "smooth",
+      });
+    }
+  }, [selectedUser]);
 
   return (
     <Box
-      w="90%"
+      w={!isTablet ? "100%" : "90%"}
       minHeight="calc(100vh - 64px)"
       maxHeight="calc(100vh - 64px)"
       p={4}
-      // bg={useColorModeValue("gray.50", "gray.800")}
+      ref={boxRef}
     >
       {selectedUser != null ? (
         <VStack spacing={4} align="stretch">
@@ -265,10 +274,14 @@ export const ChatRoom = () => {
                     />
                   </InputGroup>
                 )}
-                <SearchIcon
+                {!openSearchBar && <SearchIcon
                   cursor="pointer"
                   onClick={() => setOpenSearchBar(!openSearchBar)}
-                />
+                />}
+                {openSearchBar && <CloseIcon
+                  cursor="pointer"
+                  onClick={() => setOpenSearchBar(!openSearchBar)}
+                />}
               </HStack>
               <SettingsIcon
                 cursor="pointer"
@@ -278,7 +291,7 @@ export const ChatRoom = () => {
             </HStack>
           </HStack>
           <Box
-            h="72vh"
+            height={!isTablet ? "calc(100vh - 120px)" : "calc(100vh - 200px)"}
             p={4}
             border="1px"
             borderColor={"gray.200"}

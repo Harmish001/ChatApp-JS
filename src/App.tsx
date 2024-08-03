@@ -9,54 +9,57 @@ import { socket } from "./providers/Routes";
 import ChannelRoom from "./components/Room/ChannelRoom";
 
 function App() {
-	const { selectedUser, selectedChannel } = useSelectUser();
-	const [isSidebarVisible, setIsSidebarVisible] = useState(false);
-	const isTablet = useMediaQuery("(min-width: 800px)")[0];
+  const { selectedUser, selectedChannel } = useSelectUser();
+  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+  const isTablet = useMediaQuery("(min-width: 800px)")[0];
 
-	useEffect(() => {
-		socket.connect();
-		socket.on("connection", () => {
-			console.log("socket connected");
-		});
-		return () => {
-			socket.off("connection");
-			socket.disconnect();
-		};
-	}, []);
+  useEffect(() => {
+    socket.connect();
+    socket.on("connection", () => {
+      console.log("socket connected");
+    });
+    return () => {
+      socket.off("connection");
+      socket.disconnect();
+    };
+  }, []);
 
-	useEffect(() => {
-		setIsSidebarVisible(isTablet);
-	}, [isTablet]);
+  useEffect(() => {
+    setIsSidebarVisible(isTablet);
+  }, [isTablet]);
 
-	return (
-		<div className="App">
-			{!isSidebarVisible && (
-				<Box>
-					<HStack gap={0}>
-						{selectedUser !== null && selectedUser?.type == "chatRoom" && (
-							<ChatRoom />
-						)}
-						{selectedUser !== null &&
-							selectedUser.id != null &&
-							!selectedUser?.chatuser_id && <ChannelRoom />}
-					</HStack>
-				</Box>
-			)}
-			{isSidebarVisible && (
-				<Box>
-					<HStack gap={0}>
-						<ChatSidebar />
-						{selectedUser !== null && selectedUser?.type == "chatRoom" && (
-							<ChatRoom />
-						)}
-						{selectedUser !== null &&
-							selectedUser.id != null &&
-							!selectedUser?.chatuser_id && <ChannelRoom />}
-					</HStack>
-				</Box>
-			)}
-		</div>
-	);
+  return (
+    <div className="App">
+      {!isSidebarVisible && (
+        <Box>
+          <Stack direction="column">
+            <ChatSidebar />
+            <HStack gap={0}>
+              {selectedUser !== null && selectedUser?.type == "chatRoom" && (
+                <ChatRoom />
+              )}
+              {selectedUser !== null &&
+                selectedUser.id != null &&
+                !selectedUser?.chatuser_id && <ChannelRoom />}
+            </HStack>
+          </Stack>
+        </Box>
+      )}
+      {isSidebarVisible && (
+        <Box>
+          <HStack gap={0}>
+            <ChatSidebar />
+            {selectedUser !== null && selectedUser?.type == "chatRoom" && (
+              <ChatRoom />
+            )}
+            {selectedUser !== null &&
+              selectedUser.id != null &&
+              !selectedUser?.chatuser_id && <ChannelRoom />}
+          </HStack>
+        </Box>
+      )}
+    </div>
+  );
 }
 
 export default App;
