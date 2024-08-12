@@ -12,7 +12,14 @@ import Navbar from "../components/Navbar/Navbar";
 import AuthContextProvider, { AuthContext } from "../context/AuthContext";
 import { SelectedUserProvider } from "../context/SelectedUser";
 import { io } from "socket.io-client";
-import { Button, HStack, keyframes, Text, useToast } from "@chakra-ui/react";
+import {
+  Button,
+  HStack,
+  keyframes,
+  Text,
+  useMediaQuery,
+  useToast,
+} from "@chakra-ui/react";
 import { SketchPicker } from "react-color";
 import { MoonIcon } from "@chakra-ui/icons";
 import { useUpdateTheme } from "../hooks/AuthenticationHooks";
@@ -54,6 +61,7 @@ const Layout = ({ children }: any) => {
   const { user, setColor, color } = useContext(AuthContext);
   const { mutate } = useUpdateTheme();
   const [open, setOpen] = useState(false);
+  const isMobile = useMediaQuery("(max-width: 1025px)")[0];
 
   const handleClick = () => {
     setOpen(!open);
@@ -106,20 +114,22 @@ const Layout = ({ children }: any) => {
             </div>
           )}
           <HStack>
-            <Button
-              borderRadius={12}
-              gap={0}
-              px={1}
-              bgColor={color}
-              _hover={{
-                bgColor: getHoverColor(color),
-                color: getFontColor(color),
-              }}
-              onClick={handleClick}
-            >
-              <MoonIcon style={{ color: getFontColor(color) }} />
-            </Button>
-            {window.location.pathname == "/" && (
+            {!isMobile && (
+              <Button
+                borderRadius={12}
+                gap={0}
+                px={1}
+                bgColor={color}
+                _hover={{
+                  bgColor: getHoverColor(color),
+                  color: getFontColor(color),
+                }}
+                onClick={handleClick}
+              >
+                <MoonIcon style={{ color: getFontColor(color) }} />
+              </Button>
+            )}
+            {window.location.pathname == "/" && !isMobile && (
               <Link to={"/channels"}>
                 <Button
                   borderColor={color}
