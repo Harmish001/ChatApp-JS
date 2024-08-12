@@ -32,8 +32,9 @@ const SignUpPage = lazy(() => import("../components/Signup/Signup"));
 const LoginPage = lazy(() => import("../components/Login/Login"));
 const UserInfoPage = lazy(() => import("../components/UserInfo/UserInfo"));
 
-const URL = "http://localhost:5000";
+const URL = process.env.REACT_APP_SOCKET_URL || "";
 export const socket = io(URL);
+
 export function RouterProviders() {
   return (
     <BrowserRouter>
